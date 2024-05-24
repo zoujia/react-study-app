@@ -35,22 +35,51 @@ function EffectTwiceSamples() {
         //     window.removeEventListener('scroll', handleScroll)
         // };
 
-        // demo-3: fetching data
-        let ignore = false;
-        async function startFetching() {
+        // demo-3: fetching data, clean up using boolean flag
+        // let ignore = false;
+        // async function startFetching() {
+        //     console.log('>> useEffect, start fetching...');
+        //     const todos = await fetchMockTodoList();
+        //     // TIPS: if ignored, don't make a change to the app,
+        //     // for example the ui-update, display the data just fetched
+        //     if (!ignore) {
+        //         console.log('>>>> ✅ continue biz logic with fetched data: ', todos);
+        //     }
+        // }
+        // startFetching();
+        // return () => {
+        //     console.log('>>>> ❌ useEffect, ignore previous fetching...');
+        //     ignore = true;
+        // }
+
+        // demo-4: fetch data, clean up using AbortController
+        const abortController = new AbortController();
+        const fecthData = async () => {
             console.log('>> useEffect, start fetching...');
-            const todos = await fetchMockTodoList();
-            // TIPS: if ignored, don't make a change to the app,
-            // for example the ui-update, display the data just fetched
-            if (!ignore) {
-                console.log('>>>> ✅ continue biz logic with fetched data: ', todos);
-            }
-        }
-        startFetching();
+            setTimeout(async () => {
+                try {
+                    const res = await fetch('http://localhost:8080/demos/api/demo-todos.php', {
+                        signal: abortController.signal
+                    });
+                    const jsonRes = await res.json();
+                    console.log('>>>> ✅ continue biz logic with fetched data: ', jsonRes);
+                } catch (error) {
+                    if (error.name === 'AbortError') {
+                        console.log('>>>> ❌ useEffect, AbortError...');
+                    }
+                }
+            }, 2000);
+        };
+
+        fecthData();
+
         return () => {
-            console.log('>>>> ❌ useEffect, ignore previous fetching...');
-            ignore = true;
-        }
+            console.log('>>>> ❌ useEffect, ignore previous fetching, by calling abortController.abort()...');
+            abortController.abort();
+        };
+
+        // TIPS: more about clean up, read this post:
+        // https://maxrozen.com/race-conditions-fetching-data-react-with-useeffect
     });
 
     return (
