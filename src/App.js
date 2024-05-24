@@ -15,10 +15,13 @@ import Accordion from './components/Accordion';
 import TaskSample, { TaskProviderSample, TaskReducerAndContextSample, TaskReducerSample } from './components/TaskSample';
 import HeadingContextSample, { ProfileContextSample } from './components/HeadingContextSample';
 import RefSamples from './components/RefSamples';
+import EffectSamples from './components/EffectSamples';
 
 function App() {
   return (
     <div className="container">
+      <EffectSamples />
+      <hr/>
       <RefSamples />
       <hr />
       <ProfileContextSample />

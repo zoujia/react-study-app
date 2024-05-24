@@ -2,6 +2,47 @@ import { useRef, useState, forwardRef, useImperativeHandle } from "react";
 import { flushSync } from "react-dom";
 
 // ==
+function VideoPlayAndPauseSample() {
+    const [isPlaying, setIsPlaying] = useState(false);
+    const videoRef = useRef(null);
+    
+    function handleClick() {
+        const nextIsPlaying = !isPlaying;
+        setIsPlaying(nextIsPlaying);
+
+        if (nextIsPlaying) {
+            videoRef.current.play();
+        }
+        else {
+            videoRef.current.pause();
+        }
+    }
+
+    return (
+        <div>
+            <h3>Video play & pause demo</h3>
+            <div style={{marginBottom: '8px'}}>
+                <button type="button" onClick={handleClick}>
+                    {isPlaying ? 'Pause' : 'Play'}
+                </button>
+            </div>
+            <video
+                width="360"
+                controls
+                ref={videoRef}
+                onPlay={() => setIsPlaying(true)}
+                onPause={() => setIsPlaying(false)}
+            >
+                <source
+                    src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
+                    type="video/mp4"
+                />
+            </video>
+        </div>
+    );
+}
+
+// ==
 let nextId = 0;
 let initialTodos = [];
 for (let i = 0; i < 20; i++) {
@@ -114,6 +155,7 @@ function setupCatList() {
 }
 
 function CatFriends() {
+    // eslint-disable-next-line no-unused-vars
     const [catList, setCatList] = useState(setupCatList);
     const itemsRef = useRef(null);
 
@@ -172,6 +214,8 @@ function CatFriends() {
 export default function RefSamples() {
     return (
         <>
+            <VideoPlayAndPauseSample />
+            <hr />
             <FlushTodoListSample />
             <hr/>
             <ForwardRefSample />
