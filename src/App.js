@@ -1,23 +1,71 @@
-import logo from './logo.svg';
-import './App.css';
+import Gallery from './components/Gallery';
+// import Profile from './components/Profile';
+import TodoList from './components/TodoList';
+import PackingList from './components/PackingList';
+import DrinkList from './components/DrinkList';
+import PeopleList from './components/PeopleList';
+import Toolbar from './components/Toolbar';
+import Sculptures from './components/Sculptures';
+import StateSamples from './components/StateSamples';
+import DragBox from './components/DragBox';
+import ArraySamples from './components/ArraySamples';
+import TravelPlan, { TravelPlanWithImmer } from './components/TravelPlan';
+import MailClient from './components/MailClient';
+import Accordion from './components/Accordion';
+import TaskSample, { TaskProviderSample, TaskReducerAndContextSample, TaskReducerSample } from './components/TaskSample';
+import HeadingContextSample, { ProfileContextSample } from './components/HeadingContextSample';
+import RefSamples from './components/RefSamples';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container">
+      <RefSamples />
+      <hr />
+      <ProfileContextSample />
+      <hr />
+      <HeadingContextSample />
+      <hr />
+      <TaskProviderSample />
+      <hr />
+      <TaskReducerAndContextSample />
+      <hr />
+      <TaskReducerSample />
+      <hr />
+      <TaskSample />
+      <hr />
+      <Accordion />
+      <hr />
+      <MailClient />
+      <hr />
+      <TravelPlanWithImmer />
+      <hr />
+      <TravelPlan />
+      <hr />
+      <StateSamples />
+      <hr />
+      <ArraySamples />
+      <hr />
+      <DragBox />
+      <hr />
+      <Sculptures />
+      <hr />
+      <Toolbar onPlayMovie={() => alert('Playing!')} onUploadImage={() => alert('Uploading!')} />
+      <hr />
+      <PeopleList />
+      <hr />
+      <DrinkList />
+      <hr />
+      <PackingList />
+      <hr />
+      <h1>Amazing scientists</h1>
+      <hr/>
+      <h2>Gallery with multiple 'Profile's</h2>
+      <Gallery />
+      {/* <hr/>
+      <h2>Single Profile</h2>
+      <Profile /> */}
+      <hr/>
+      <TodoList />
     </div>
   );
 }
