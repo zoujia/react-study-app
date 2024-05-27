@@ -1,4 +1,240 @@
 import { useEffect, useRef, useState } from "react";
+import { fetchData } from "../utils/chain-select-api";
+
+// ==
+function sendChatMessage(message) {
+    console.log('🔵 You sent: ' + message);
+}
+
+function createConnection(serverUrl, roomId) {
+    // TODO: A real implementation would actually connect to the server
+    return {
+        connect () {
+            console.log('✅ Connecting to "' + roomId + '" room at ' + serverUrl + '...');
+        },
+        disconnect () {
+            console.log('❌ Disconnected from "' + roomId + '" room at ' + serverUrl);
+        }
+    };
+}
+
+const chatServerUrl = 'https://localhost:1234';
+
+function ChatRoom({ roomId }) {
+    const [message, setMessage] = useState('');
+
+    useEffect(() => {
+        const connection = createConnection(chatServerUrl, roomId);
+        connection.connect();
+
+        return () => {
+            connection.disconnect();
+        };
+    }, [roomId]);
+
+    function handleSendMessage() {
+        sendChatMessage(message);
+        setMessage('');
+    }
+
+    return (
+        <div>
+            <h3>Welcome to #{roomId}# room!</h3>
+            <div>
+                <textarea
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                /><br/>
+                <button disabled={!message} onClick={handleSendMessage}>Send message</button>
+            </div>
+        </div>
+    );
+}
+
+function ChatRoomSample() {
+    const [roomId, setRoomId] = useState('general');
+    const [showChat, setShowChat] = useState(false);
+
+    return (
+        <div>
+            <h2>Chat room...</h2>
+            <div>
+                <label>
+                    Choose the chat room:{' '}
+                    <select
+                        value={roomId}
+                        onChange={(e) => setRoomId(e.target.value)}
+                    >
+                        <option value="general">general</option>
+                        <option value="travel">travel</option>
+                        <option value="music">music</option>
+                    </select>
+                </label>{' '}
+                <button type="button"
+                    onClick={() => setShowChat(!showChat)}
+                >{showChat ? 'Close' : 'Show'} chat</button>
+            </div>
+            { showChat && <ChatRoom roomId={roomId} />}
+        </div>
+    );
+}
+
+// ==
+function useSelectOption(url) {
+    const [list, setList] = useState(null);
+    const [selectedId, setSelectedId] = useState('');
+
+    useEffect(() => {
+        if (!url) {
+            return;
+        }
+
+        let ignore = false;
+        fetchData(url).then(res => {
+            if (!ignore) {
+                setList(res);
+                setSelectedId(res[0].id);
+            }
+        });
+
+        return () => ignore = true;
+    }, [url]);
+
+    return [list, selectedId, setSelectedId, setList];
+}
+
+function ChainSelectSample() {
+    // const [planetList, setPlanetList] = useState([]);
+    // const [planetId, setPlanetId] = useState('');
+    // const [placeList, setPlaceList] = useState([]);
+    // const [placeId, setPlaceId] = useState('');
+
+    // useEffect(() => {
+    //     let ignore = false;
+
+    //     fetchData('/planets').then(res => {
+    //         if (!ignore) {
+    //             console.log('Fetched a list of planets.');
+
+    //             setPlanetList(res);
+    //             setPlanetId(res[0].id);
+    //         }
+    //     });
+
+    //     return () => ignore = true;
+    // }, []);
+
+    // useEffect(() => {
+    //     if (!planetId) {
+    //         return;
+    //     }
+
+    //     let ignore = false;
+
+    //     fetchData(`/planets/${planetId}/places`).then(res => {
+    //         if (!ignore) {
+    //             console.log('Fetched a list of places on "' + planetId + '".');
+                
+    //             setPlaceList(res);
+    //             setPlaceId(res[0].id);
+    //         }
+    //     });
+
+    //     return () => ignore = true;
+    // }, [planetId]);
+
+    // Solution-2: custom hook to extract the repetitive code
+    const [planetList, planetId, setPlanetId] = useSelectOption('/planets');
+    const [placeList, placeId, setPlaceId, setPlaceList] = useSelectOption(planetId ? `/planets/${planetId}/places` : null);
+
+    return (
+        <div>
+            <h2>Chain select</h2>
+            <div>
+                <label>
+                    Pick a planet:{' '}
+                    <select value={planetId} onChange={(e) => {
+                        setPlanetId(e.target.value);
+                        setPlaceList(null);
+                        setPlaceId('');
+                    }}>
+                        {planetList?.map(planet => (
+                            <option key={planet.id} value={planet.id}>{planet.name}</option>
+                        ))}
+                    </select>
+                </label>
+            </div>
+            <div>
+                <label>
+                    Pick a place:{' '}
+                    <select value={placeId} onChange={(e) => setPlaceId(e.target.value)}>
+                        {placeList?.map(place => (
+                            <option key={place.id} value={place.id}>{place.name}</option>
+                        ))}
+                    </select>
+                </label>
+            </div>
+            <p>
+                You are going to: {placeId || '???'} on {planetId || '???'}
+            </p>
+        </div>
+    );
+}
+
+// ==
+function ToggleMovingDotSample() {
+    const [canMove, setCanMove] = useState(false);
+    const [position, setPosition] = useState({x: 0, y: 0});
+
+    useEffect(() => {
+        // Solution-1:
+        // function handleMove(e) {
+        //     if (canMove) {
+        //         setPosition({x: e.clientX, y: e.clientY});
+        //     }
+        // }
+
+        // window.addEventListener('pointermove', handleMove);
+        // return () => window.removeEventListener('pointermove', handleMove);
+
+        // Solution-2:
+        function handleMove(e) {
+            setPosition({x: e.clientX, y: e.clientY});
+        }
+
+        if (canMove) {
+            window.addEventListener('pointermove', handleMove);
+            return () => window.removeEventListener('pointermove', handleMove);
+        }
+    }, [canMove]);
+
+    return (
+        <div>
+            <label>
+                <input
+                    type="checkbox"
+                    checked={canMove}
+                    onChange={(e) => setCanMove(e.target.checked)}
+                />{' '}
+                The dot is allowed to move
+            </label>
+            <div
+                style={{
+                    position: 'absolute',
+                    backgroundColor: 'pink',
+                    borderRadius: '50%',
+                    opacity: 0.6,
+                    transform: `translate(${position.x}px, ${position.y}px)`,
+                    pointerEvents: 'none',
+                    left: -20,
+                    top: -20,
+                    width: 40,
+                    height: 40
+                }}
+            ></div>
+        </div>
+    );
+}
 
 // ==
 function fetchMockTodoList() {
@@ -175,6 +411,12 @@ function VideoPlayerSample() {
 export default function EffectSamples() {
     return (
         <>
+            <ChatRoomSample />
+            <hr />
+            <ChainSelectSample />
+            <hr />
+            <ToggleMovingDotSample />
+            <hr/>
             <EffectTwiceSamples />
             <hr />
             <CountInfiniteLoopSample />
