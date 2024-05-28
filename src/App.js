@@ -16,12 +16,15 @@ import TaskSample, { TaskProviderSample, TaskReducerAndContextSample, TaskReduce
 import HeadingContextSample, { ProfileContextSample } from './components/HeadingContextSample';
 import RefSamples from './components/RefSamples';
 import EffectSamples from './components/EffectSamples';
+import EffectEventSamples from './components/EffectEventSamples';
 
 function App() {
   return (
     <div className="container">
+      <EffectEventSamples />
+      <hr />
       <EffectSamples />
-      <hr/>
+      <hr />
       <RefSamples />
       <hr />
       <ProfileContextSample />

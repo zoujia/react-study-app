@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { fetchData } from "../utils/chain-select-api";
 
 // ==
+
+// ==
 function sendChatMessage(message) {
     console.log('🔵 You sent: ' + message);
 }
@@ -237,6 +239,7 @@ function ToggleMovingDotSample() {
 }
 
 // ==
+// eslint-disable-next-line no-unused-vars
 function fetchMockTodoList() {
     return new Promise(resolve => {
         setTimeout(() => {
@@ -320,7 +323,7 @@ function EffectTwiceSamples() {
 
     return (
         <div>
-            <h2>Hanle Effect run twice in dev-mode, by adding 'cleanup' logic</h2>
+            <h2>Handle Effect run twice in dev-mode, by adding 'cleanup' logic</h2>
             <div>
                 <dialog ref={dialogRef}>
                     <p>Hi, here is a dialog</p>
@@ -335,6 +338,7 @@ function EffectTwiceSamples() {
 
 // ==
 function CountInfiniteLoopSample() {
+    // eslint-disable-next-line no-unused-vars
     const [count, setCount] = useState(1);
 
     // TIP: in useEffect, set state would cause re-render immediately,
