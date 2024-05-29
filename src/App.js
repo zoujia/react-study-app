@@ -17,10 +17,13 @@ import HeadingContextSample, { ProfileContextSample } from './components/Heading
 import RefSamples from './components/RefSamples';
 import EffectSamples from './components/EffectSamples';
 import EffectEventSamples from './components/EffectEventSamples';
+import CustomHooksSamples from './components/CustomHooksSample';
 
 function App() {
   return (
     <div className="container">
+      <CustomHooksSamples />
+      <hr />
       <EffectEventSamples />
       <hr />
       <EffectSamples />
