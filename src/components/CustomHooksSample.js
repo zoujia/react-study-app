@@ -1,7 +1,115 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { experimental_useEffectEvent as useEffectEvent } from 'react';
 import { useFormInput, useOnlineStatus, useOnlineStatus2 } from "../utils/hooks";
 import Toastify from 'toastify-js';
+
+// ==
+function usePointerPosition() {
+    const [position, setPosition] = useState({x: 0, y: 0});
+    useEffect(() => {
+        function handleMove(e) {
+            setPosition({
+                x: e.clientX,
+                y: e.clientY
+            });
+        }
+
+        window.addEventListener('pointermove', handleMove);
+
+        return () => window.removeEventListener('pointermove', handleMove);
+    }, []);
+
+    return position;
+}
+
+function useDelayedValue(value, delay) {
+    const [delayedValue, setDelayedValue] = useState(value);
+
+    useEffect(() => {
+        setTimeout(() => {
+            setDelayedValue(value);
+        }, delay);
+    }, [value, delay]);
+
+    return delayedValue;
+}
+
+function Dot({ position, opacity }) {
+    return (
+        <div style={{
+            position: 'absolute',
+            backgroundColor: 'pink',
+            borderRadius: '50%',
+            opacity,
+            transform: `translate(${position.x}px, ${position.y}px)`,
+            pointerEvents: 'none',
+            left: -20,
+            top: -20,
+            width: 40,
+            height: 40
+        }}
+        ></div>
+    );
+}
+
+function StaggeredSample() {
+    const pos1 = usePointerPosition();
+    const pos2 = useDelayedValue(pos1, 100);
+    const pos3 = useDelayedValue(pos2, 200);
+    const pos4 = useDelayedValue(pos3, 100);
+    const pos5 = useDelayedValue(pos3, 50);
+
+    return (
+        <div>
+            <h3>Move your cursor to see what happening...</h3>
+            <Dot position={pos1} opacity={1} />
+            <Dot position={pos2} opacity={0.8} />
+            <Dot position={pos3} opacity={0.6} />
+            <Dot position={pos4} opacity={0.4} />
+            <Dot position={pos5} opacity={0.2} />
+        </div>
+    );
+}
+
+// ==
+function useInterval(callback, delay) {
+    const onTick = useEffectEvent(callback);
+    useEffect(() => {
+        const id = setInterval(onTick, delay);
+        return () => clearInterval(id);
+    }, [delay]);
+}
+
+function useCounter(delay) {
+    const [count, setCount] = useState(0);
+
+    useInterval(() => {
+        setCount(c => c + 1);
+    }, delay);
+
+    return count;
+}
+
+function IntervalSample() {
+    const count = useCounter(1000);
+    const headingRef = useRef(null);
+
+    useInterval(() => {
+        const randomColor = `hsla(${Math.random() * 360}, 100%, 50%, 0.2)`;
+        headingRef.current.style.backgroundColor = randomColor;
+    }, 2000);
+
+    return (
+        <h3
+            style={{
+                padding: '32px 16px',
+                borderRadius: '8px',
+                border: '2px solid #000'
+            }}
+            ref={headingRef}
+        >Seconds passed: {count}</h3>
+    );
+}
 
 // ==
 function showNotification(message, theme = 'dark') {
@@ -205,6 +313,10 @@ function OnlineStatusSample() {
 export default function CustomHooksSamples() {
     return (
         <>
+            <StaggeredSample />
+            <hr />
+            <IntervalSample />
+            <hr />
             <ChatRoomSample />
             <hr />
             <FormInputSample />

@@ -419,8 +419,8 @@ export default function EffectSamples() {
             <hr />
             <ChainSelectSample />
             <hr />
-            <ToggleMovingDotSample />
-            <hr/>
+            {/* <ToggleMovingDotSample />
+            <hr/> */}
             <EffectTwiceSamples />
             <hr />
             <CountInfiniteLoopSample />
